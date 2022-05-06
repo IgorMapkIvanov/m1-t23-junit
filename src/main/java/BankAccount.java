@@ -2,6 +2,7 @@ public class BankAccount {
 
     private boolean isBlocked = false;
     private Integer amount;
+    private String currency;
 
     private final String firstName;
     private final String secondName;
@@ -15,19 +16,27 @@ public class BankAccount {
         this.isBlocked = true;
     }
 
-    public void activate() {
+    public void activate(String currency) {
         this.amount = 0;
+        this.currency = currency;
     }
 
-    public Integer amount() {
+    public Integer getAmount() {
+        if (amount == null) {
+            throw new IllegalStateException("Счёт не активирован.");
+        }
         return this.amount;
+    }
+
+    public String getCurrency() {
+        return currency;
     }
 
     public boolean isBlocked() {
         return isBlocked;
     }
 
-    public String[] name() {
+    public String[] getFullName() {
         return new String[] {firstName, secondName};
     }
 }

@@ -1,10 +1,7 @@
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class BankAccountTest {
 
@@ -17,26 +14,45 @@ public class BankAccountTest {
     @Test
     public void shouldReturnZeroAmountAfterActivation() {
         BankAccount account = new BankAccount("a", "b");
-        account.activate();
-        assertEquals(0, account.amount());
+        account.activate("RUB");
+        assertEquals(new Integer(0), account.getAmount());
+        assertEquals("RUB", account.getCurrency());
     }
 
     @Test
-    public void shouldBeBlockedAfterBlockIsCalled() {
+    public void shouldBeBlockedAfterBlockIsCalled(){
         BankAccount account = new BankAccount("a", "b");
         account.block();
         assertTrue(account.isBlocked());
     }
 
     @Test
-    public void shouldReturnFirstNameThenSecondName() {
-        BankAccount account = new BankAccount("testFirstName", "testLastName");
-        assertArrayEquals(new String[] {"testFirstName", "testLastName"}, account.name());
+    public void shouldReturnFirstNameThenSecondName(){
+        BankAccount account = new BankAccount("a", "b");
+        String[] names = account.getFullName();
+        assertArrayEquals(new String[] {"a", "b"}, names, "Массивы не равны!");
     }
 
     @Test
-    public void shouldReturnNullAmountWhenNotActive() {
+    public void shouldReturnNullAmountWhenNotActive(){
         BankAccount account = new BankAccount("a", "b");
-        assertNull(account.amount());
+
+        // после исполнения блока ошибка попадёт в переменную exception
+        final IllegalStateException exception = assertThrows(
+
+                // класс ошибки
+                IllegalStateException.class,
+
+                // создание и переопределение экземпляра класса Executable
+                new Executable() {
+                    @Override
+                    public void execute() {
+                        // здесь блок кода, который хотим проверить
+                        // при делении на 0 ожидаем ArithmeticException
+                        account.getAmount();
+                    }
+                });
+        assertEquals("Счёт не активирован.", exception.getMessage());
+        assertNull(account.getCurrency());
     }
 }
